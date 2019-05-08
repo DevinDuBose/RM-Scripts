@@ -10,10 +10,11 @@ import com.runemate.game.api.hybrid.region.Players;
 
 public interface SkillHandler {
 	
-	boolean checkEquipment();
+	boolean checkItems();
 	boolean performTask();
 	Object checkTask();
 	Area getTaskLocation();
+	RegionPath pathToTask = null;
 	
 	default boolean checkCoordinates(Area taskLocation) {
 		Player player = Players.getLocal();
@@ -29,7 +30,7 @@ public interface SkillHandler {
 	}
 	
 	default boolean checkRequirements(Skill skill, int requiredLevel) {
-		if ((skill.getCurrentLevel() >= requiredLevel) && checkEquipment()) {
+		if ((skill.getCurrentLevel() >= requiredLevel) && checkItems()) {
 			return true;
 		}
 		
@@ -38,11 +39,14 @@ public interface SkillHandler {
 	}
 	
 	
-	default boolean performPathingToLocation(Area taskLocation) {
-		RegionPath pathToTask = RegionPath.buildTo(taskLocation.getRandomCoordinate());
-		
-		if (pathToTask != null) {
-			return pathToTask.step();
+	default boolean performPathingToLocation(RegionPath pathToTask) {
+		if (!Players.getLocal().isMoving()) {
+			if (pathToTask != null) {
+				return pathToTask.step();
+			}
+		} else {
+			Environment.getBot().getLogger().info("Player is already running, do not re-calculate path.");
+			return true;
 		}
 		
 		Environment.getBot().getLogger().info("Failed to build path to current task.");

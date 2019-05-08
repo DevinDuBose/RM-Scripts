@@ -5,6 +5,7 @@ import java.util.HashSet;
 import com.antibanscausebans.jot.handlers.SkillHandler;
 import com.antibanscausebans.jot.skills.Woodcutting;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
+import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.hybrid.Environment;
@@ -13,7 +14,7 @@ import com.runemate.game.api.hybrid.local.Skill;
 
 public class TaskHandler {
 	
-	private enum State {
+	public enum State {
 		UNKNOWN, COMBAT, PRAYER, COOKING, WOODCUTTING, FLETCHING, FISHING, FIREMAKING, CRAFTING, SMITHING, MINING, HERBLORE, AGILITY, THIEVING, FARMING, RUNECRAFTING, HUNTER, DIVINATION, INVENTION
 	}
 	
@@ -22,20 +23,23 @@ public class TaskHandler {
 	private HashSet<State> tasksCompleted;
 	public State currentStage;
 	public SkillHandler currentSkill;
+	public RegionPath pathToCurrentTask;
 	
 	public TaskHandler() {
 		tasksCompleted = null; 
 		tasksRequired = getRequiredTaskQuantity();
 		
+		setCurrentStage(State.UNKNOWN);
+		
 		if (tasksRequired < 20) { //Only supporting regular (10) and master (15) skills at this time.
-			if (currentStage == null || currentStage == State.UNKNOWN) {
+			if (currentStage == State.UNKNOWN) {
 				Object[] o = getNextTask();
 				setCurrentStage((State) o[0]);
 				currentSkill = (SkillHandler) o[1];
 				
 				//Go ahead and walk to the first task we will be performing.
 				if (!currentSkill.checkCoordinates(currentSkill.getTaskLocation())) {
-					currentSkill.performPathingToLocation(currentSkill.getTaskLocation());
+					currentSkill.performPathingToLocation(pathToCurrentTask);
 				}
 			}
 		} else { Environment.getBot().getLogger().info("This script only supports the 10/15 skill requirement auras."); }
@@ -55,6 +59,14 @@ public class TaskHandler {
 	
 	public SkillHandler getCurrentSkill() {
 		return currentSkill;
+	}
+	
+	public void setCurrentPath() {
+		pathToCurrentTask = RegionPath.buildTo(currentSkill.getTaskLocation().getRandomCoordinate());
+	}
+	
+	public RegionPath getCurrentPath() {
+		return pathToCurrentTask;
 	}
 	
 	public void setCurrentSkill(SkillHandler skill) {
