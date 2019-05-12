@@ -1,4 +1,4 @@
-package com.antibanscausebans.jot.handlers;
+package com.antibanscausebans.scripts.jot.handlers;
 
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.Player;

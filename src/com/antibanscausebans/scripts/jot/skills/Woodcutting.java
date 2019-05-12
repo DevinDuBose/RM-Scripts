@@ -1,6 +1,6 @@
-package com.antibanscausebans.jot.skills;
+package com.antibanscausebans.scripts.jot.skills;
 
-import com.antibanscausebans.jot.handlers.SkillHandler;
+import com.antibanscausebans.scripts.jot.handlers.SkillHandler;
 import com.makar.util.Interact;
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;

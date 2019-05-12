@@ -1,11 +1,11 @@
-package com.antibanscausebans.jot;
+package com.antibanscausebans.scripts.jot;
 
 import java.io.IOException;
 
-import com.antibanscausebans.jot.gui.JotGUIController;
-import com.antibanscausebans.jot.handlers.SkillHandler;
-import com.antibanscausebans.jot.handlers.TaskHandler;
-import com.antibanscausebans.jot.skills.Woodcutting;
+import com.antibanscausebans.scripts.jot.gui.JotGUIController;
+import com.antibanscausebans.scripts.jot.handlers.SkillHandler;
+import com.antibanscausebans.scripts.jot.handlers.TaskHandler;
+import com.antibanscausebans.scripts.jot.skills.Woodcutting;
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.region.Players;

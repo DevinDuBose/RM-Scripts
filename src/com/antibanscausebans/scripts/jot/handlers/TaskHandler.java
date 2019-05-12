@@ -1,9 +1,9 @@
-package com.antibanscausebans.jot.handlers;
+package com.antibanscausebans.scripts.jot.handlers;
 
 import java.util.HashSet;
 
-import com.antibanscausebans.jot.handlers.SkillHandler;
-import com.antibanscausebans.jot.skills.Woodcutting;
+import com.antibanscausebans.scripts.jot.handlers.SkillHandler;
+import com.antibanscausebans.scripts.jot.skills.Woodcutting;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.region.Players;
@@ -17,7 +17,6 @@ public class TaskHandler {
 	public enum State {
 		UNKNOWN, COMBAT, PRAYER, COOKING, WOODCUTTING, FLETCHING, FISHING, FIREMAKING, CRAFTING, SMITHING, MINING, HERBLORE, AGILITY, THIEVING, FARMING, RUNECRAFTING, HUNTER, DIVINATION, INVENTION
 	}
-	
 	
 	private int tasksRequired;
 	private HashSet<State> tasksCompleted;
@@ -33,14 +32,12 @@ public class TaskHandler {
 		
 		if (tasksRequired < 20) { //Only supporting regular (10) and master (15) skills at this time.
 			if (currentStage == State.UNKNOWN) {
-				Object[] o = getNextTask();
-				setCurrentStage((State) o[0]);
-				currentSkill = (SkillHandler) o[1];
-				
-				//Go ahead and walk to the first task we will be performing.
-				if (!currentSkill.checkCoordinates(currentSkill.getTaskLocation())) {
-					currentSkill.performPathingToLocation(pathToCurrentTask);
-				}
+				if (getNextTask()) {
+					//Go ahead and walk to the first task we will be performing.
+					if (!currentSkill.checkCoordinates(currentSkill.getTaskLocation())) {
+						currentSkill.performPathingToLocation(pathToCurrentTask);
+					}
+				} else { Environment.getBot().getLogger().info("Failed to get initial task."); }
 			}
 		} else { Environment.getBot().getLogger().info("This script only supports the 10/15 skill requirement auras."); }
 	}
@@ -61,6 +58,10 @@ public class TaskHandler {
 		return currentSkill;
 	}
 	
+	public void setCurrentSkill(SkillHandler skill) {
+		currentSkill = skill;
+	}
+	
 	public void setCurrentPath() {
 		pathToCurrentTask = RegionPath.buildTo(currentSkill.getTaskLocation().getRandomCoordinate());
 	}
@@ -69,25 +70,22 @@ public class TaskHandler {
 		return pathToCurrentTask;
 	}
 	
-	public void setCurrentSkill(SkillHandler skill) {
-		currentSkill = skill;
-	}
-	
-	public Object[] getNextTask() {
+	public boolean getNextTask() {
 		State state = null;
 		
 		while (state == null) {
 			int randomSkill = (int)Random.nextGaussian(0, State.values().length);
-			Object skillObject = canPerformTask(State.values()[randomSkill]);
+			SkillHandler skillObject = canPerformTask(State.values()[randomSkill]);
 			if (skillObject != null) {
-				state = State.values()[randomSkill];
-				return new Object[] {state, skillObject};
+				setCurrentStage(State.values()[randomSkill]);
+				setCurrentSkill(skillObject);
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 	
-	private Object canPerformTask(State skill) {
+	private SkillHandler canPerformTask(State skill) {
 		if (tasksCompleted.contains(skill)) {
 			Environment.getBot().getLogger().info(skill.name().toString() + " has already been completed.");
 			return null;
@@ -98,7 +96,7 @@ public class TaskHandler {
 				Woodcutting task = new Woodcutting();
 				if (task.checkRequirements(Skill.WOODCUTTING, 1)) {
 					return task;
-				}
+				} else { return null; }
 //			case FIREMAKING:
 //				Firemaking task = new Firemaking();
 //				return tasksCompleted.contains(State.WOODCUTTING) && task.checkRequirements(Skill.FIREMAKING, 1);

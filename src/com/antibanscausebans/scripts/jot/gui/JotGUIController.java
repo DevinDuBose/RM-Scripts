@@ -1,10 +1,11 @@
-package com.antibanscausebans.jot.gui;
+package com.antibanscausebans.scripts.jot.gui;
 
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.antibanscausebans.jot.JackOfTrades;
+import com.antibanscausebans.scripts.jot.JackOfTrades;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableView;
